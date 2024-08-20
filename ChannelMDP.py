@@ -1,5 +1,5 @@
 import numpy as np
-import MATest.utils as util
+import utils as util
 
 alpha = 3.0
 ref_loss = 0.001

@@ -1,13 +1,14 @@
 import numpy as np
-import MATest.State_Transition_AutoRegressive_AF as ENV_AR_AF
-import MATest.DQN_follower as dqn_follower
-import MATest.DQN_leader as dqn_leader
+
+import State_Transition_AutoRegressive_AF as ENV_AR_AF
+import DQN_follower as dqn_follower
+import DQN_leader as dqn_leader
 
 total_power_level = 10
 total_price_level = 10
 
 def multiagent_dqn_alliance():
-    from MATest.State_Transition_AutoRegressive_AF import power_relay_max, cost_limitation_per_watt, power_source_max, alpha, relay_num, beta
+    from State_Transition_AutoRegressive_AF import power_relay_max, cost_limitation_per_watt, power_source_max, alpha, relay_num, beta
     total_relay = relay_num
     train_outer_loop = 100
     test_outer_loop = 100
@@ -40,6 +41,8 @@ def multiagent_dqn_alliance():
     result_source, result_source_in_train = [], []
     result_relay, result_relay_in_train = [], []
     for episode_out in range(train_outer_loop+test_outer_loop):
+        print(f"Episode {episode_out}/{train_outer_loop+test_outer_loop-1}")
+
         env.reset_channels()
         channel_gains_t0 = env.get_state()
         state_slot_t0 = channel_gains_t0
@@ -97,5 +100,12 @@ def multiagent_dqn_alliance():
             result_source.append(reward_in_traj_source / 1.0 / traj_len)
             result_relay.append(reward_in_traj_relay / 1.0 / traj_len)
 
+    print("multiagent_dqn_alliance results:")
+    print(f"Source in train: {np.array(result_source_in_train)}")
+    print(f"Relay in train: {np.array(result_relay_in_train)}")
+    print(f"Source in test: {np.array(result_source)}")
+    print(f"Relay in test: {np.array(result_relay)}")
+    return np.array(result_source_in_train), np.array(result_relay_in_train), np.array(result_source), np.array(result_relay)
 
-# multiagent_dqn_alliance()
+
+source_in_train, relay_in_train, source_test, relay_test = multiagent_dqn_alliance()

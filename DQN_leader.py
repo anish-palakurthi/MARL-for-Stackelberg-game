@@ -1,9 +1,11 @@
 import numpy as np
 import tensorflow as tf
+tf = tf.compat.v1
+tf.disable_v2_behavior()
 import time
 
-np.random.seed(int(time.clock()*10000000%100))
-tf.set_random_seed(int(time.clock()*10000000%100))
+np.random.seed(int(time.time()*10000000%100))
+tf.set_random_seed(int(time.time()*10000000%100))
 
 class DeepQNetwork:
     def __init__(

@@ -1,10 +1,11 @@
 import time
 import numpy as np
 import tensorflow as tf
-
-SEED = int(time.clock()*100000000%100)
+tf = tf.compat.v1
+tf.disable_v2_behavior()
+SEED = int(time.time()*100000000%100)
 np.random.seed(SEED)
-tf.set_random_seed(SEED)
+tf.compat.v1.set_random_seed(SEED)
 
 
 class SumTree(object):
@@ -122,7 +123,7 @@ TAU = 0.001      # soft replacement
 MEMORY_CAPACITY = 10000
 BATCH_SIZE = 128
 
-from MATest.State_Transition_AutoRegressive_AF import power_relay_max, cost_limitation_per_watt, power_source_max, alpha, relay_num
+from State_Transition_AutoRegressive_AF import power_relay_max, cost_limitation_per_watt, power_source_max, alpha, relay_num
 A_BOUND = [1.0, 1.0]
 S_DIM = 2*relay_num+1
 A_DIM = 2
@@ -150,7 +151,7 @@ class DDPG_PER(object):
             self.q_ = self._build_c(self.S_, self.a_, scope='target', trainable=False)
 
         # networks parameters
-        self.ae_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='Actor/eval')
+        self.ae_params = tf.get_collection(tf.compat.v1.GraphKeys.GLOBAL_VARIABLES, scope='Actor/eval')
         self.at_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='Actor/target')
         self.ce_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='Critic/eval')
         self.ct_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='Critic/target')

@@ -1,16 +1,16 @@
 import numpy as np
 import math
-import MATest.utils as util
-import MATest.State_Transition_AutoRegressive_AF as ENV_AR_AF
-import MATest.DDPG_PER_leader as ddpg_leader
-import MATest.DDPG_PER_follower as ddpg_follower
+import utils as util
+import State_Transition_AutoRegressive_AF as ENV_AR_AF
+import DDPG_PER_leader as ddpg_leader
+import DDPG_PER_follower as ddpg_follower
 
 total_relay = 1
 total_action = 20
 GAMMA = 0.9
 
 def multiagent_ddpg_alliance():
-    from MATest.State_Transition_AutoRegressive_AF import power_relay_max, cost_limitation_per_watt, power_source_max, alpha, relay_num, beta
+    from State_Transition_AutoRegressive_AF import power_relay_max, cost_limitation_per_watt, power_source_max, alpha, relay_num, beta
     total_relay = relay_num
     train_outer_loop = 100
     test_outer_loop = 100
@@ -25,6 +25,8 @@ def multiagent_ddpg_alliance():
     result_source, result_source_in_train = [], []
     result_relay, result_relay_in_train = [], []
     for episode_out in range(train_outer_loop+test_outer_loop):
+        print(f"Episode {episode_out}/{train_outer_loop+test_outer_loop-1}")
+
         if episode_out >= train_outer_loop:
             train_flag = False
         env.reset_channels()
@@ -95,10 +97,17 @@ def multiagent_ddpg_alliance():
         if episode_out >= train_outer_loop:
             result_source.append(reward_in_traj_source / 1.0 / traj_len)
             result_relay.append(reward_in_traj_relay / 1.0 / traj_len)
+    print("multiagent_ddpg_alliance results:")
+    print(f"Source in train: {np.array(result_source_in_train)}")
+    print(f"Relay in train: {np.array(result_relay_in_train)}")
+    print(f"Source in test: {np.array(result_source)}")
+    print(f"Relay in test: {np.array(result_relay)}")
+    return np.array(result_source_in_train), np.array(result_relay_in_train), np.array(result_source), np.array(result_relay)
+
 
 
 def leader_learning_follower_gaming():
-    from MATest.State_Transition_AutoRegressive_AF import power_relay_max, cost_limitation_per_watt, power_source_max, alpha, relay_num, beta
+    from State_Transition_AutoRegressive_AF import power_relay_max, cost_limitation_per_watt, power_source_max, alpha, relay_num, beta
     total_relay = relay_num
     train_outer_loop = 100
     test_outer_loop = 100
@@ -112,6 +121,8 @@ def leader_learning_follower_gaming():
     result_source, result_source_in_train = [], []
     result_relay, result_relay_in_train = [], []
     for episode_out in range(train_outer_loop+test_outer_loop):
+        print(f"Episode {episode_out}/{train_outer_loop+test_outer_loop-1}")
+
         if episode_out >= train_outer_loop:
             train_flag = False
         env.reset_channels()
@@ -170,9 +181,16 @@ def leader_learning_follower_gaming():
             result_source.append(reward_in_traj_source / 1.0 / traj_len)
             result_relay.append(reward_in_traj_relay / 1.0 / traj_len)
 
+    print("leader_learning_follower_gaming results:")
+    print(f"Source in train: {np.array(result_source_in_train)}")
+    print(f"Relay in train: {np.array(result_relay_in_train)}")
+    print(f"Source in test: {np.array(result_source)}")
+    print(f"Relay in test: {np.array(result_relay)}")
+    return np.array(result_source_in_train), np.array(result_relay_in_train), np.array(result_source), np.array(result_relay)
+
 
 def distri_relays_cooperative_partial():
-    from MATest.State_Transition_AutoRegressive_AF import power_relay_max, cost_limitation_per_watt, power_source_max, alpha, relay_num
+    from State_Transition_AutoRegressive_AF import power_relay_max, cost_limitation_per_watt, power_source_max, alpha, relay_num
     total_relay = relay_num
     train_outer_loop = 100
     test_outer_loop_1 = 100
@@ -190,6 +208,8 @@ def distri_relays_cooperative_partial():
     result_source, result_source_in_train = [], []
     result_relay, result_relay_in_train = [], []
     for episode_out in range(train_outer_loop+test_outer_loop_1):
+        print(f"Episode {episode_out}/{train_outer_loop+test_outer_loop_1-1}")
+
         if episode_out >= train_outer_loop and episode_out < (train_outer_loop+test_outer_loop_1):
             train_flag = False
             var = 0
@@ -300,11 +320,17 @@ def distri_relays_cooperative_partial():
             result_source.append(reward_in_traj_source / 1.0 / traj_len)
             result_relay.append(reward_in_traj_relay / 1.0 / traj_len)
 
+    print("distri_relays_cooperative_partial results:")
+    print(f"Source in train: {np.array(result_source_in_train)}")
+    print(f"Relay in train: {np.array(result_relay_in_train)}")
+    print(f"Source in test: {np.array(result_source)}")
+    print(f"Relay in test: {np.array(result_relay)}")
+    return np.array(result_source_in_train), np.array(result_relay_in_train), np.array(result_source), np.array(result_relay)
 
 
-# multiagent_ddpg_alliance()
 
-# leader_learning_follower_gaming()
 
-# distri_relays_cooperative_partial()
+source_in_train_1, relay_in_train_1, source_test_1, relay_test_1 = multiagent_ddpg_alliance()
+source_in_train_2, relay_in_train_2, source_test_2, relay_test_2 = leader_learning_follower_gaming()
+source_in_train_3, relay_in_train_3, source_test_3, relay_test_3 = distri_relays_cooperative_partial()
 

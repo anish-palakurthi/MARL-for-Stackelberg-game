@@ -1,13 +1,13 @@
-import MATest.utils as util
-import MATest.State_Transition_AutoRegressive_AF as ENV_AR_AF
+import numpy as np
+import utils as util
+import State_Transition_AutoRegressive_AF as ENV_AR_AF
 
 total_relay = 5
 total_action = 20
 GAMMA = 0.9
 
-
 def Random_AF():
-    from MATest.State_Transition_AutoRegressive_AF import power_relay_max, cost_limitation_per_watt, power_source_max, alpha, relay_num, beta
+    from State_Transition_AutoRegressive_AF import power_relay_max, cost_limitation_per_watt, power_source_max, alpha, relay_num, beta
     total_relay = relay_num
     train_outer_loop = 0
     test_outer_loop = 100
@@ -17,6 +17,7 @@ def Random_AF():
     result_source = []
     result_relay = []
     for episode_out in range(train_outer_loop+test_outer_loop):
+        print(f"Episode {episode_out}/{train_outer_loop+test_outer_loop-1}")
         channel_gains_t0 = env.get_state()
         state_slot_t0 = channel_gains_t0
         reward_in_traj_relay, reward_in_traj_source = 0, 0
@@ -47,9 +48,13 @@ def Random_AF():
         if episode_out >= train_outer_loop:
             result_source.append(reward_in_traj_source / 1.0 / traj_len)
             result_relay.append(reward_in_traj_relay / 1.0 / traj_len)
+    print("Random_AF results:")
+    print(f"Source: {np.array(result_source)}")
+    print(f"Relay: {np.array(result_relay)}")
+    return np.array(result_source), np.array(result_relay)
 
 def Pure_Game_Theory_Method_instan():
-    from MATest.State_Transition_AutoRegressive_AF import power_relay_max, cost_limitation_per_watt, power_source_max, alpha, relay_num
+    from State_Transition_AutoRegressive_AF import power_relay_max, cost_limitation_per_watt, power_source_max, alpha, relay_num
     total_relay = relay_num
     test_outer_loop = 100
     traj_len = 1000
@@ -58,6 +63,7 @@ def Pure_Game_Theory_Method_instan():
     result_source_STE = []
     result_relay_STE = []
     for episode_out in range(test_outer_loop):
+        print(f"Episode {episode_out}/{test_outer_loop-1}")
         env.reset_channels()
         channel_gains_t0 = env.get_state()
         reward_in_traj_relay_STE, reward_in_traj_source_STE = 0, 0
@@ -81,9 +87,14 @@ def Pure_Game_Theory_Method_instan():
     for (source_STE, relay_STE) in zip(result_source_STE, result_relay_STE):
         capacity_STE = source_STE + relay_STE
         result_capacity_STE.append(capacity_STE)
+    print("Pure_Game_Theory_Method_instan results:")
+    print(f"Source: {np.array(result_source_STE)}")
+    print(f"Relay: {np.array(result_relay_STE)}")
+    print(f"Capacity: {np.array(result_capacity_STE)}")
+    return np.array(result_source_STE), np.array(result_relay_STE), np.array(result_capacity_STE)
 
 def Pure_Game_Theory_Method_instan_competitive_relays():
-    from MATest.State_Transition_AutoRegressive_AF import power_relay_max, cost_limitation_per_watt, power_source_max, alpha, relay_num
+    from State_Transition_AutoRegressive_AF import power_relay_max, cost_limitation_per_watt, power_source_max, alpha, relay_num
     total_relay = relay_num
     test_outer_loop = 100
     traj_len = 1000
@@ -92,6 +103,7 @@ def Pure_Game_Theory_Method_instan_competitive_relays():
     result_source_STE = []
     result_relay_STE = []
     for episode_out in range(test_outer_loop):
+        print(f"Episode {episode_out}/{test_outer_loop-1}")
         env.reset_channels()
         channel_gains_t0 = env.get_state()
         reward_in_traj_relay_STE, reward_in_traj_source_STE = 0, 0
@@ -114,11 +126,12 @@ def Pure_Game_Theory_Method_instan_competitive_relays():
     for (source_STE, relay_STE) in zip(result_source_STE, result_relay_STE):
         capacity_STE = source_STE + relay_STE
         result_capacity_STE.append(capacity_STE)
+    print("Pure_Game_Theory_Method_instan_competitive_relays results:")
+    print(f"Source: {np.array(result_source_STE)}")
+    print(f"Relay: {np.array(result_relay_STE)}")
+    print(f"Capacity: {np.array(result_capacity_STE)}")
+    return np.array(result_source_STE), np.array(result_relay_STE), np.array(result_capacity_STE)
 
-
-# Random_AF()
-
-# Pure_Game_Theory_Method_instan()
-
-# Pure_Game_Theory_Method_instan_competitive_relays()
-
+result_source_1, result_relay_1 = Random_AF()
+result_source_2, result_relay_2, result_capacity_2 = Pure_Game_Theory_Method_instan()
+# result_source_3, result_relay_3, result_capacity_3 = Pure_Game_Theory_Method_instan_competitive_relays()

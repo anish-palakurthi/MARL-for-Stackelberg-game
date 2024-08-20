@@ -1,12 +1,11 @@
 import numpy as np
 import math
-import MATest.State_Transition_AutoRegressive_AF as ENV_AR_AF
-import MATest.DDPG_single as ddpg_single
-
+import State_Transition_AutoRegressive_AF as ENV_AR_AF
+import DDPG_single as ddpg_single
 
 def SG_SingleDDPG():
     weight_param = 1.5
-    from MATest.State_Transition_AutoRegressive_AF import power_relay_max, cost_limitation_per_watt, power_source_max, alpha, relay_num
+    from State_Transition_AutoRegressive_AF import power_relay_max, cost_limitation_per_watt, power_source_max, alpha, relay_num
     total_relay = relay_num
     train_outer_loop = 100
     test_outer_loop = 100
@@ -21,6 +20,7 @@ def SG_SingleDDPG():
     result_relay, result_relay_in_train = [], []
     result_single, result_single_in_train = [], []
     for episode_out in range(train_outer_loop+test_outer_loop):
+        print(f"Episode {episode_out}/{train_outer_loop+test_outer_loop-1}")
         if episode_out >= train_outer_loop:
             train_flag = False
         env.reset_channels()
@@ -72,7 +72,13 @@ def SG_SingleDDPG():
             result_source.append(reward_in_traj_source / 1.0 / traj_len)
             result_relay.append(reward_in_traj_relay / 1.0 / traj_len)
             result_single.append(reward_in_traj_single / 1.0 / traj_len)
+    print("SG_SingleDDPG results:")
+    print(f"Source in train: {np.array(result_source_in_train)}")
+    print(f"Relay in train: {np.array(result_relay_in_train)}")
+    print(f"Single in train: {np.array(result_single_in_train)}")
+    print(f"Source in test: {np.array(result_source)}")
+    print(f"Relay in test: {np.array(result_relay)}")
+    print(f"Single in test: {np.array(result_single)}")
+    return np.array(result_source_in_train), np.array(result_relay_in_train), np.array(result_single_in_train), np.array(result_source), np.array(result_relay), np.array(result_single)
 
-
-# SG_SingleDDPG()
-
+result_source_in_train, result_relay_in_train, result_single_in_train, result_source, result_relay, result_single = SG_SingleDDPG()

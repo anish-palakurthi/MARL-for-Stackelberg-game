@@ -1,6 +1,6 @@
 import random
 import numpy as np
-import MATest.ChannelMDP as chmdp
+import ChannelMDP as chmdp
 
 power_relay_max = 2.0
 cost_limitation_per_watt = 10.0
